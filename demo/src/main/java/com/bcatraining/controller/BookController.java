@@ -1,9 +1,10 @@
 package com.bcatraining.controller;
 
-import com.bcatraining.handler.RequestNotValidException;
-import com.bcatraining.model.BookRequest;
-import com.bcatraining.model.BookResponse;
-import com.bcatraining.model.entity.Book;
+import com.bcatraining.helper.dto.ApiResponse;
+import com.bcatraining.helper.dto.request.BookRequest;
+import com.bcatraining.helper.handler.RequestNotValidException;
+import com.bcatraining.helper.dto.response.BookResponse;
+import com.bcatraining.model.Book;
 import com.bcatraining.service.BookService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -11,10 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
 import java.util.List;
 
 @RestController
@@ -27,63 +26,66 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public BookResponse<List<Book>> getAllBooks() {
+    public ApiResponse<List<BookResponse>> getAllBooks() {
         String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
         logger.info("Request Source ID: {}", sourceId);
-        BookResponse<List<Book>> bookResponse = new BookResponse<>();
-        bookResponse.setData(bookService.findAll());
-        bookResponse.setMessage("success");
-        return bookResponse;
+        return bookService.getAllBook();
     }
 
-    @GetMapping(path="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BookResponse<Book> getBookById(@PathVariable Long id) {
+    @GetMapping(path="/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<BookResponse> getBookById(@PathVariable Long id) {
         String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
         logger.info("Request Source ID: {}", sourceId);
-        BookResponse<Book> bookResponse = new BookResponse<>();
-        bookResponse.setMessage("success");
-        bookResponse.setData(bookService.findById(id));
-        return bookResponse;
+        return bookService.getBookById(id);
+    }
+
+    @GetMapping(path="/title/{title}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<BookResponse> getBookByTitle(@PathVariable String title) {
+        String sourceId = request.getHeader("X-Request-Source");
+        String traceId = request.getHeader("X-Request-Trace");
+        logger.info("Request Trace ID: {}", traceId);
+        logger.info("Request Source ID: {}", sourceId);
+        return bookService.getByTitle(title);
+    }
+
+    @GetMapping(path="/author/{author}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<List<BookResponse>> getBookByAuthor(@PathVariable String author) {
+        String sourceId = request.getHeader("X-Request-Source");
+        String traceId = request.getHeader("X-Request-Trace");
+        logger.info("Request Trace ID: {}", traceId);
+        logger.info("Request Source ID: {}", sourceId);
+        return bookService.getBooksByAuthor(author);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public BookResponse<Book> createBook(@Valid @RequestBody Book book) {
+    public ApiResponse<BookResponse> createBook(@Valid @RequestBody BookRequest book) {
         String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
         logger.info("Request Source ID: {}", sourceId);
-        BookResponse<Book> bookResponse = new BookResponse<>();
-        bookResponse.setMessage("success");
-        bookResponse.setData(bookService.save(book));
-        return bookResponse;
+        return bookService.insertBook(book);
     }
 
     @DeleteMapping(path="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BookResponse<Book> deleteBookById(@PathVariable Long id) {
+    public ApiResponse<BookResponse> deleteBookById(@PathVariable Long id) {
         String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
         logger.info("Request Source ID: {}", sourceId);
-        BookResponse<Book> bookResponse = new BookResponse<>();
-        bookResponse.setData(bookService.delete(id));
-        bookResponse.setMessage("Book with ID " + id + " has been deleted.");
-        return bookResponse;
+        return bookService.deleteBookById(id);
     }
 
     @PutMapping(path="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public BookResponse<Book> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) throws RequestNotValidException {
+    public ApiResponse<BookResponse> updateBook(@PathVariable Long id, @Valid @RequestBody BookRequest book) throws RequestNotValidException {
         String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
         logger.info("Request Source ID: {}", sourceId);
-        BookResponse<Book> bookResponse = new BookResponse<>();
-        bookResponse.setMessage("Book with ID " + id + " has been updated.");
-        bookResponse.setData(bookService.update(id, book));
-        return bookResponse;
+        return bookService.updateBook(id, book);
     }
 
 }
