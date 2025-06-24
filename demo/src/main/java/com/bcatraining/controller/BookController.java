@@ -10,9 +10,11 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.List;
 
 @RestController
@@ -24,52 +26,63 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping
-    public List<Book> getAllBooks() {
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public BookResponse<List<Book>> getAllBooks() {
         String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
         logger.info("Request Source ID: {}", sourceId);
-        return bookService.findAll();
+        BookResponse<List<Book>> bookResponse = new BookResponse<>();
+        bookResponse.setData(bookService.findAll());
+        bookResponse.setMessage("success");
+        return bookResponse;
     }
 
-    @GetMapping("/{id}")
-    public BookResponse getBookById(@PathVariable Long id) {
+    @GetMapping(path="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public BookResponse<Book> getBookById(@PathVariable Long id) {
+        String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
-        BookResponse bookResponse = new BookResponse();
+        logger.info("Request Source ID: {}", sourceId);
+        BookResponse<Book> bookResponse = new BookResponse<>();
         bookResponse.setMessage("success");
         bookResponse.setData(bookService.findById(id));
         return bookResponse;
     }
 
-    @PostMapping
-    public BookResponse createBook(@Valid @RequestBody Book book) {
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public BookResponse<Book> createBook(@Valid @RequestBody Book book) {
+        String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
-        BookResponse bookResponse = new BookResponse();
+        logger.info("Request Source ID: {}", sourceId);
+        BookResponse<Book> bookResponse = new BookResponse<>();
         bookResponse.setMessage("success");
         bookResponse.setData(bookService.save(book));
         return bookResponse;
     }
 
-    @DeleteMapping("/{id}")
-    public BookResponse deleteBookById(@PathVariable Long id) {
+    @DeleteMapping(path="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public BookResponse<Book> deleteBookById(@PathVariable Long id) {
+        String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
-        bookService.delete(id);
-        BookResponse bookResponse = new BookResponse();
+        logger.info("Request Source ID: {}", sourceId);
+        BookResponse<Book> bookResponse = new BookResponse<>();
+        bookResponse.setData(bookService.delete(id));
         bookResponse.setMessage("Book with ID " + id + " has been deleted.");
         return bookResponse;
     }
 
-    @PutMapping("/{id}")
-    public BookResponse updateBook(@PathVariable Long id, @Valid @RequestBody Book book) throws RequestNotValidException {
+    @PutMapping(path="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public BookResponse<Book> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) throws RequestNotValidException {
+        String sourceId = request.getHeader("X-Request-Source");
         String traceId = request.getHeader("X-Request-Trace");
         logger.info("Request Trace ID: {}", traceId);
-        bookService.update(id, book);
-        BookResponse bookResponse = new BookResponse();
+        logger.info("Request Source ID: {}", sourceId);
+        BookResponse<Book> bookResponse = new BookResponse<>();
         bookResponse.setMessage("Book with ID " + id + " has been updated.");
+        bookResponse.setData(bookService.update(id, book));
         return bookResponse;
     }
 

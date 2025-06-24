@@ -2,9 +2,9 @@ package com.bcatraining.model;
 
 import com.bcatraining.model.entity.Book;
 
-public class BookResponse {
+public class BookResponse<T> {
     private String message;
-    private Book data;
+    private T data;
 
     public BookResponse() {}
 
@@ -16,11 +16,11 @@ public class BookResponse {
         this.message = message;
     }
 
-    public Book getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Book data) {
+    public void setData(T data) {
         this.data = data;
     }
 }
