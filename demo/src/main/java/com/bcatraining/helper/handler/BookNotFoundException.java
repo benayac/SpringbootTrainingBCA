@@ -1,6 +1,4 @@
-package com.bcatraining.handler;
-
-import com.bcatraining.model.entity.Book;
+package com.bcatraining.helper.handler;
 
 public class BookNotFoundException extends RuntimeException{
     public BookNotFoundException(Long id) {

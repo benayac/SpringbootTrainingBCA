@@ -1,4 +1,4 @@
-package com.bcatraining.handler;
+package com.bcatraining.helper.handler;
 
 public class RequestNotValidException extends RuntimeException{
     public RequestNotValidException() {
